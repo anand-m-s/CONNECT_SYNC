@@ -9,6 +9,7 @@ import http from "http"
 import colors from 'colors.ts'
 import initializeSocket from "./frameworks/webserver/config/socket"
 import errorHandler from "./errors/errorHandler"
+import { courseRouter } from "./frameworks/webserver/routes/meditation"
 
 colors?.enable()
 
@@ -22,8 +23,10 @@ connectDB()
 expressConfig(app)
 
 app.use('/api', userRouter)
+
 app.use('/api/admin', adminRouter)
 app.use('/api/chat', chatRouter)
+app.use('/api/course',courseRouter)
 
 app.use(errorHandler)
 

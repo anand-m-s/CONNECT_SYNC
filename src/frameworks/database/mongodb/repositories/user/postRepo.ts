@@ -1,5 +1,7 @@
+import mongoose from "mongoose";
 import { PostData, PostInterface, commentData, replyData, reportData, savedPost } from "../../../../../types/user/post";
 import Comment from "../../models/comment";
+import Connection from "../../models/connections";
 import Like from "../../models/likes";
 import Notification from "../../models/notifications";
 import Post from "../../models/post";
@@ -18,27 +20,82 @@ export const postRepo = {
     },
     getAllPost: async (id: string) => {
         try {
-            return await Post.find({ userId: id }).lean();
+            return await Post.find({ userId: id, isBlocked: false }).lean();
         } catch (error) {
             throw new Error((error as Error).message)
         }
 
     },
-    // getUsersPost: async (perPage: number, page: number) => {
+    // getUsersPost: async (perPage: number, page: number,userId:string) => {
     //     try {
-    //         return await Post.find({ isBlocked: false })
-    //             .populate('userId', 'userName profilePic')
-    //             .sort({ createdAt: -1 })
-    //             .skip((page - 1) * perPage)
-    //             .limit(perPage);
+    //         return await Post.aggregate([
+    //             { $match: { isBlocked: false } },
+    //             { $sort: { createdAt: -1 } },
+    //             { $skip: (page - 1) * perPage },
+    //             { $limit: perPage },
+    //             {
+    //                 $lookup: {
+    //                     from: 'users',
+    //                     localField: 'userId',
+    //                     foreignField: '_id',
+    //                     as: 'users'
+    //                 }
+    //             },
+    //             { $unwind: "$users" },
+    //             {
+    //                 $lookup: {
+    //                     from: 'likes',
+    //                     localField: '_id',
+    //                     foreignField: 'postId',
+    //                     as: 'likes'
+    //                 }
+    //             },
+    //             {
+    //                 $project: {
+    //                     _id: 1,
+    //                     users: {
+    //                         _id: 1,
+    //                         userName: 1,
+    //                         profilePic: 1,
+    //                         verifiedTag: 1,
+    //                         verifiedTagPurchasedAt: 1,
+    //                     },
+    //                     imageUrl: 1,
+    //                     location: 1,
+    //                     description: 1,
+    //                     likes: 1,
+    //                     createdAt: 1
+    //                 }
+    //             }
+    //         ]);
     //     } catch (error) {
-    //         throw new Error((error as Error).message)
+
+    //         throw new Error((error as Error).message);
     //     }
     // },
-    getUsersPost: async (perPage: number, page: number) => {
+    getUsersPost: async (perPage: number, page: number, userId: string) => {
         try {
+            // Fetch the following list of the user
+            const userConnection = await Connection.findOne({ userId }).select('following');
+
+            if (!userConnection) {
+                throw new Error('User connections not found');
+            }
+
+            const followingIds = userConnection.following;
+            const currentUserObjectId = new mongoose.Types.ObjectId(userId);
+
+
             return await Post.aggregate([
-                { $match: { isBlocked: false } },
+                {
+                    $match: {
+                        $or: [
+                            { userId: { $in: followingIds } },
+                            { userId: currentUserObjectId }
+                        ],
+                        isBlocked: false
+                    }
+                },
                 { $sort: { createdAt: -1 } },
                 { $skip: (page - 1) * perPage },
                 { $limit: perPage },
@@ -50,7 +107,7 @@ export const postRepo = {
                         as: 'users'
                     }
                 },
-                { $unwind: "$users" },
+                { $unwind: '$users' },
                 {
                     $lookup: {
                         from: 'likes',
@@ -78,8 +135,7 @@ export const postRepo = {
                 }
             ]);
         } catch (error) {
-          
-            throw new Error((error as Error).message);
+            throw new Error((error as Error).message)
         }
     },
     deletePost: async (postId: string) => {

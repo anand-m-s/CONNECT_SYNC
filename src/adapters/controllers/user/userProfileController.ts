@@ -1,4 +1,4 @@
-import { Response, Request } from "express";
+import { Response, Request, NextFunction } from "express";
 import userProfileUseCase from "../../../app/usecases/users/profile/userProfileUseCase";
 
 
@@ -16,11 +16,11 @@ export default {
         }
     },
 
-    updateProfile: async (req: Request, res: Response) => {      
+    updateProfile: async (req: Request, res: Response) => {
         try {
             const data = req.body
             const userId = req.user.userId as string
-            const updatedUser = await userProfileUseCase.updateProfileUseCase(data,userId);
+            const updatedUser = await userProfileUseCase.updateProfileUseCase(data, userId);
             res.json(updatedUser);
         } catch (error) {
             res.status(500).json({ error: (error as Error).message })
@@ -30,8 +30,8 @@ export default {
     getAllUserDetails: async (req: Request, res: Response) => {
         try {
             const searchTerm = req.query.searchTerm as string;
-            console.log('inside controller lookin for search term')
-            console.log(searchTerm)
+
+
             res.json(await userProfileUseCase.getAllUserDetails(searchTerm))
         } catch (error) {
             res.status(500).json({ error: (error as Error).message })
@@ -69,14 +69,71 @@ export default {
     getNotification: async (req: Request, res: Response) => {
         try {
             const userId = req.user.userId as string
-            console.log(userId)
-            const data = await userProfileUseCase.getNotificationUseCase(userId)
-           
-            res.json({data})
+            const { data, newNotifications } = await userProfileUseCase.getNotificationUseCase(userId)
+
+            res.json({ data, newNotifications })
 
         } catch (error) {
 
             res.status(500).json({ error: (error as Error).message })
+
         }
-    }
+    },
+    notificationMarked: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = req.user.userId
+            await userProfileUseCase.notificationReadedUsecase(userId)
+
+        } catch (error) {
+            res.status(500).json({ error: (error as Error).message })
+
+        }
+    },
+    blockUser: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const currentUserId = req.user.userId
+            const userToBlock = req.query.id as string
+            console.log(currentUserId)
+            console.log(userToBlock)
+            await userProfileUseCase.blockUserUsecase(currentUserId, userToBlock)
+            res.status(200).json({ message: "User blocked successfully" });
+
+        } catch (error) {
+            res.status(500).json({ error: (error as Error).message })
+
+        }
+    },
+    isBlock: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const currentUserId = req.user.userId
+            const userId = req.query.id as string
+            const isBlocked = await userProfileUseCase.isBlockUserUsecase(currentUserId, userId)
+            res.status(200).json({ isBlocked })
+        } catch (error) {
+            res.status(500).json({ error: (error as Error).message })
+
+        }
+    },
+    getAllBLockedUsers: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const currentUserId = req.user.userId
+            const blockedUsers = await userProfileUseCase.blockedUsers(currentUserId)
+            res.status(200).json({ blockedUsers })
+        } catch (error) {
+            res.status(500).json({ error: (error as Error).message })
+
+        }
+    },
+    unblockUser: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const currentUserId = req.user.userId
+            const unblockUserId = req.query.id as string;
+            await userProfileUseCase.unBlockedUsers(currentUserId, unblockUserId)
+            res.status(200).json({ message: "User successfully unblocked."});
+        } catch (error) {
+            res.status(500).json({ error: (error as Error).message })
+
+        }
+    },
+
 }

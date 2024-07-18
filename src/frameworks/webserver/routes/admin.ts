@@ -3,6 +3,7 @@ import adminAuthController from '../../../adapters/controllers/admin/adminAuthCo
 import { adminUserManagment } from '../../../adapters/controllers/admin/adminUserManagment'
 import { protectAdmin } from '../middleware/adminAuth'
 import { adminPostManagment } from '../../../adapters/controllers/admin/adminPostControll'
+import { adminCourseController } from '../../../adapters/controllers/admin/adminCourseController'
 export const adminRouter = express.Router()
 
 
@@ -15,6 +16,9 @@ adminRouter.get('/getReport',protectAdmin,adminPostManagment.report)
 adminRouter.post('/blockReportedPost',protectAdmin,adminPostManagment.blockPost)
 adminRouter.get('/getPostData',protectAdmin,adminPostManagment.getPostData)
 adminRouter.get('/getReportData',protectAdmin,adminPostManagment.getReportData)
+adminRouter.post('/getSignedUrl',protectAdmin,adminCourseController.signedUrl)
+adminRouter.post('/createCourse',protectAdmin,adminCourseController.createCourse)
+adminRouter.get('/getCourses',protectAdmin,adminCourseController.getCourses)
 
 
 

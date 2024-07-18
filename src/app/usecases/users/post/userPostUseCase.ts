@@ -31,7 +31,7 @@ export default {
          
             const perPageNum = parseInt(perPage, 10);
             const pageNum = parseInt(page, 10);
-            const posts = await postRepo.getUsersPost(perPageNum, pageNum);          
+            const posts = await postRepo.getUsersPost(perPageNum, pageNum,userId);          
             const savedPosts = await postRepo.getSavedPostsRepo(userId)
             const savedPostIds = savedPosts.map(savedPost => (savedPost.postId as any)._id.toString())
             const enrichedPosts = await Promise.all(posts.map(async post => {

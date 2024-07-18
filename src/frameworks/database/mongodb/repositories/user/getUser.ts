@@ -63,7 +63,7 @@ export const getUser = {
                 ? { userName: { $regex: searchTerm, $options: 'i' } }
                 : {};
             const allUsers = await User.find(query).lean();
-            console.log('inside get user for fetch all the user data')
+        
             return allUsers
         } catch (error) {
             throw new Error((error as Error).message);

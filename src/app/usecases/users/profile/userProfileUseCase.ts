@@ -14,9 +14,9 @@ export default {
         }
     },
 
-    updateProfileUseCase: async (data: UserDocument,userId:string) => {
+    updateProfileUseCase: async (data: UserDocument, userId: string) => {
         try {
-            const user = await getUser.updateProfile(data,userId)       
+            const user = await getUser.updateProfile(data, userId)
             if (user) {
                 const updatedUser = {
                     userName: user.userName,
@@ -36,8 +36,7 @@ export default {
     getAllUserDetails: async (searchTerm: string) => {
         try {
             const users = await getUser.getAllUsers(searchTerm)
-            console.log('inside user case for fetch all the user data')
-            console.log(users!)
+       
             return users
 
         } catch (error) {
@@ -62,11 +61,49 @@ export default {
         }
     },
     getNotificationUseCase: async (userId: string) => {
-        try {           
-            return await connection.getNotificationRepo(userId)
+        try {
+            const data = await connection.getNotificationRepo(userId)
+            const newNotifications = data.filter(noti => !noti.isRead).length
+            return { data, newNotifications }
         } catch (error) {
 
             throw new Error((error as Error).message)
         }
-    }
+    },
+    notificationReadedUsecase: async (userId: string) => {
+        try {
+            await connection.markNotificationAsRead(userId)
+        } catch (error) {
+            throw new Error((error as Error).message)
+        }
+    },
+    blockUserUsecase: async (currentUserId:string,userToBlock:string) => {
+        try {
+            await connection.blockUserRepo(currentUserId,userToBlock)
+        } catch (error) {
+            throw new Error((error as Error).message)
+        }
+    },
+    isBlockUserUsecase: async (currentUserId:string,userId:string) => {
+        try {
+            return await connection.isBlockUserRepo(currentUserId,userId)
+        } catch (error) {
+            throw new Error((error as Error).message)
+        }
+    },
+    blockedUsers: async (currentUserId:string) => {
+        try {
+            return await connection.getBlockedUsersRepo(currentUserId)
+        } catch (error) {
+            throw new Error((error as Error).message)
+        }
+    },
+    unBlockedUsers: async (currentUserId:string,unblockUserId:string) => {
+        try {
+             await connection.unBlockUserRepo(currentUserId,unblockUserId)
+        } catch (error) {
+            throw new Error((error as Error).message)
+        }
+    },
+
 }

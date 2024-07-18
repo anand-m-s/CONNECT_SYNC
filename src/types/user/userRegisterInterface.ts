@@ -36,6 +36,8 @@ export interface userRegisterInterface{
     verifiedExp:Date;
 }
 
-export interface connectionInterface{
-    
+export interface blockedUsersInterface{
+  _id:string;
+  userId:string;
+  blockedList:string[];
 }

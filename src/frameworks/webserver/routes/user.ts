@@ -34,3 +34,9 @@ userRouter.get('/notification', protectUser, userProfileController.getNotificati
 userRouter.post('/savedPost', protectUser, userPostController.savedPost)
 userRouter.get('/getSavedPosts', protectUser, userPostController.getSavedPosts)
 userRouter.post('/verifiedTag', protectUser, userAuthController.verifiedTag)
+userRouter.put('/notificationAsRead', protectUser, userProfileController.notificationMarked)
+userRouter.post('/blockUser', protectUser, userProfileController.blockUser)
+userRouter.get('/isBlock', protectUser, userProfileController.isBlock)
+userRouter.get('/getAllBlockedUsers', protectUser, userProfileController.getAllBLockedUsers)
+userRouter.put('/unblockUser', protectUser, userProfileController.unblockUser)
+

@@ -83,10 +83,8 @@ export default function initializeSocket(server: HTTPServer): Server {
 
 
           // =====Listen for like events======
-          socket.on('like', ({ postId, liker, postOwnerId }) => {
-            console.log('inside like socket')
-            console.log(postId,liker,postOwnerId)
-            socket.to(postOwnerId).emit('liked', { postId, liker,postOwnerId });
+          socket.on('like', ({ postId, liker, postOwnerId,profilePic,createdAt }) => {
+            socket.to(postOwnerId).emit('liked', { postId, liker,postOwnerId,profilePic,createdAt});
         });
 
         //=comment

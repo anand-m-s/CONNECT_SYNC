@@ -101,7 +101,6 @@ export default {
             res.status(200).json({ action, likeCount,user })
         } catch (error) {
             res.status(500).json({ error: (error as Error).message })
-            res.status(500).json({ error: (error as Error).message })
         }
     },
     isLiked: async (req: Request, res: Response) => {
