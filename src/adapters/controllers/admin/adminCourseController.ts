@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { createPresignedPost } from "../../../utils/s3";
-import { Course, CourseData } from "../../../types/admin/adminCourse";
+import {CourseData } from "../../../types/admin/adminCourse";
 import { adminMeditationUsecases } from "../../../app/usecases/admin/adminCourseUsecases";
 
 
