@@ -23,7 +23,7 @@ const expressConfig = (app: Application) => {
             maxAge: 24 * 60 * 60 * 1000,
             secure: true,
             httpOnly: true,
-            sameSite: 'strict'
+            sameSite: 'none'
         }
     }))
 
