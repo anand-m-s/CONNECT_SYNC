@@ -26,7 +26,11 @@ app.use('/api', userRouter)
 
 app.use('/api/admin', adminRouter)
 app.use('/api/chat', chatRouter)
-app.use('/api/course',courseRouter)
+app.use('/api/course', courseRouter)
+
+app.get("/", (req, res) => {
+    res.send("Vannu Mwoneeeee")
+})
 
 app.use(errorHandler)
 
