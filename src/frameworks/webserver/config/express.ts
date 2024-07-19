@@ -19,6 +19,8 @@ const expressConfig = (app: Application) => {
         secret: sessionSecret,
         resave: false,
         saveUninitialized: true,
+        proxy:true,
+        name:'connect-sync',
         cookie: {
             maxAge: 24 * 60 * 60 * 1000,
             secure: true,
