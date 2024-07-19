@@ -7,7 +7,7 @@ import session from 'express-session';
 
 declare module 'express-session' {
     interface SessionData {
-       
+
         otp?: string;
         otpGeneratedTime?: number;
         email: string;
@@ -21,6 +21,9 @@ const expressConfig = (app: Application) => {
         saveUninitialized: true,
         cookie: {
             maxAge: 24 * 60 * 60 * 1000,
+            secure: true,
+            httpOnly: true,
+            sameSite: 'strict'
         }
     }))
 

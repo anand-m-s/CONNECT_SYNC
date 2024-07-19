@@ -16,9 +16,9 @@ colors?.enable()
 const app = express()
 const server = http.createServer(app)
 
-initializeSocket(server);
 
 connectDB()
+initializeSocket(server);
 
 expressConfig(app)
 
@@ -27,10 +27,6 @@ app.use('/api', userRouter)
 app.use('/api/admin', adminRouter)
 app.use('/api/chat', chatRouter)
 app.use('/api/course', courseRouter)
-
-app.get("/", (req, res) => {
-    res.send("Vannu Mwoneeeee")
-})
 
 app.use(errorHandler)
 

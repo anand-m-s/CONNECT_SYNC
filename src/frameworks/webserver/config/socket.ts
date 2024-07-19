@@ -18,7 +18,7 @@ export default function initializeSocket(server: HTTPServer): Server {
     const io = new Server(server, {
         pingTimeout: 60000,
         cors: {
-            origin: process.env.ORIGIN,
+            origin:process.env.ORIGIN,
         },
     });
 
