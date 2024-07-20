@@ -10,19 +10,27 @@ import { generateToken } from "../../../app/utils/generateToken";
 import { verifiedTagInterface } from "../../../types/user/userRegisterInterface";
 
 export default {
-    registerUser: async (req: Request, res: Response,next:NextFunction) => {
+    registerUser: async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { email, userName } = req.body           
+            const { email, userName } = req.body
             const user = await userAuthUsecase.registerUser(req.body)
             if (user) {
                 const otp = generateOtp()
                 const sessionData = req.session!;
                 sessionData.otp = otp;
                 sessionData.otpGeneratedTime = Date.now();
-                sendVerifyMail(req, userName, email)
+                // sendVerifyMail(req, userName, email)
+                req.session.save(err => {
+                    if (err) {
+                        console.error('Failed to save session:', err);
+                        return next(new Error('Session save failed'));
+                    }
+                    sendVerifyMail(req, userName, email)
+                    res.status(200).json({ message: "User registered please verify otp now", user });
+                });
             }
-            res.status(200).json({ message: "User registered please verify otp now", user });
-        } catch (error) {        
+            // res.status(200).json({ message: "User registered please verify otp now", user });
+        } catch (error) {
             next(error);
         }
     },
@@ -121,10 +129,10 @@ export default {
         }
     },
     verifiedTag: async (req: Request, res: Response) => {
-        try {       
+        try {
             const userId = req.user.userId
-            const data:verifiedTagInterface = req.body
-            await userAuthUsecase.verifyTagUseCase(data,userId)
+            const data: verifiedTagInterface = req.body
+            await userAuthUsecase.verifyTagUseCase(data, userId)
             res.json({ message: "Verified tag updated successfully" });
         } catch (error) {
             res.status(500).json({ error: (error as Error).message });
