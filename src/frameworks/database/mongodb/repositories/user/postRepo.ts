@@ -26,53 +26,6 @@ export const postRepo = {
         }
 
     },
-    // getUsersPost: async (perPage: number, page: number,userId:string) => {
-    //     try {
-    //         return await Post.aggregate([
-    //             { $match: { isBlocked: false } },
-    //             { $sort: { createdAt: -1 } },
-    //             { $skip: (page - 1) * perPage },
-    //             { $limit: perPage },
-    //             {
-    //                 $lookup: {
-    //                     from: 'users',
-    //                     localField: 'userId',
-    //                     foreignField: '_id',
-    //                     as: 'users'
-    //                 }
-    //             },
-    //             { $unwind: "$users" },
-    //             {
-    //                 $lookup: {
-    //                     from: 'likes',
-    //                     localField: '_id',
-    //                     foreignField: 'postId',
-    //                     as: 'likes'
-    //                 }
-    //             },
-    //             {
-    //                 $project: {
-    //                     _id: 1,
-    //                     users: {
-    //                         _id: 1,
-    //                         userName: 1,
-    //                         profilePic: 1,
-    //                         verifiedTag: 1,
-    //                         verifiedTagPurchasedAt: 1,
-    //                     },
-    //                     imageUrl: 1,
-    //                     location: 1,
-    //                     description: 1,
-    //                     likes: 1,
-    //                     createdAt: 1
-    //                 }
-    //             }
-    //         ]);
-    //     } catch (error) {
-
-    //         throw new Error((error as Error).message);
-    //     }
-    // },
     getUsersPost: async (perPage: number, page: number, userId: string) => {
         try {
             // Fetch the following list of the user
@@ -392,6 +345,18 @@ export const postRepo = {
             throw new Error((error as Error).message);
         }
     },
+    deleteCommentRepo: async (id: string) => {
+        try {
+            const comment = await Comment.findById(id);
+            if (comment) {
+                await Comment.findByIdAndDelete(id);
+            } else {
+                await Replay.findByIdAndDelete(id);
+            }
+        } catch (error) {
+            throw new Error((error as Error).message);
+        }
+    }
 
 
 }

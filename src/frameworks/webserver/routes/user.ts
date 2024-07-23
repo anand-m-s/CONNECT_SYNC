@@ -39,4 +39,5 @@ userRouter.post('/blockUser', protectUser, userProfileController.blockUser)
 userRouter.get('/isBlock', protectUser, userProfileController.isBlock)
 userRouter.get('/getAllBlockedUsers', protectUser, userProfileController.getAllBLockedUsers)
 userRouter.put('/unblockUser', protectUser, userProfileController.unblockUser)
+userRouter.delete('/deleteComment',protectUser,userPostController.deleteComment)
 

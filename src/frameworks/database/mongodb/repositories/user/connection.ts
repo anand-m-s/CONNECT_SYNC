@@ -3,6 +3,7 @@ import Connection, { connectionInterface } from "../../models/connections"
 import Notification from "../../models/notifications";
 import { blockedUsersInterface, NotificationInterface } from "../../../../../types/user/userRegisterInterface";
 import BlockedList, { BlockedUsersDocument } from "../../models/blockedUsers";
+import Chat from "../../models/chat";
 
 
 
@@ -96,6 +97,10 @@ export const connection = {
     blockUserRepo: async (currentUserId: string, userToBlock: string) => {
         try {
             let block: any = await BlockedList.findOne({ userId: currentUserId })
+            await Chat.updateOne({ users: { $all: [currentUserId, userToBlock] } },
+                { $set: { isBlocked: true } }
+            );
+
             if (!block) {
                 block = new BlockedList({
                     userId: currentUserId,
@@ -162,6 +167,15 @@ export const connection = {
                 { userId: currentUserId },
                 { $pull: { blockedList: unblockUserId } }
             )
+            const result = await BlockedList.findOne({
+                userId: unblockUserId,
+                blockedList: { $elemMatch: { $eq: currentUserId } }
+            })
+            if (!result) {
+                await Chat.updateOne({ users: { $all: [currentUserId, unblockUserId] } },
+                    { $set: { isBlocked: false } }
+                );
+            }
         } catch (error) {
             throw new Error((error as Error).message)
         }

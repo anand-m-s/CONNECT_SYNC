@@ -159,6 +159,16 @@ export default {
         } catch (error) {            
             res.status(500).json({ error: (error as Error).message })
         }
+    },
+    deleteComment:async(req:Request,res:Response)=>{
+        try {
+            const id = req.query.id as string
+            console.log(id)
+            await userPostUseCase.deleteCommentUsecase(id)
+            res.status(200).json({message:'comment delete sucessfully'})
+        } catch (error) {            
+            res.status(500).json({ error: (error as Error).message })
+        }
     }
 
 

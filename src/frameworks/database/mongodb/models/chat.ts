@@ -6,7 +6,8 @@ export interface chatDocument extends Document{
     isGroupChat:boolean;
     users:UserDocument[];
     latestMessage:Schema.Types.ObjectId;
-    groupAdmin:UserDocument;    
+    groupAdmin:UserDocument;
+    isBlocked:boolean;    
 }
 const chatSchema:Schema<chatDocument> = new Schema(
     {
@@ -28,6 +29,10 @@ const chatSchema:Schema<chatDocument> = new Schema(
         groupAdmin:{
             type:mongoose.Types.ObjectId,
             ref:'User'
+        },
+        isBlocked:{
+            type:Boolean,
+            default:false
         }
 
     },{

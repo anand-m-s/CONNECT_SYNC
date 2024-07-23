@@ -1,4 +1,4 @@
-import express, { Application } from 'express'
+import express, { Application, Request } from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
@@ -29,6 +29,7 @@ const expressConfig = (app: Application) => {
         }
     }))
 
+    
     app.use(morgan('dev'))
     app.use(cookieParser())
     app.use(cors({

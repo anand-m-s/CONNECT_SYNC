@@ -84,14 +84,7 @@ const chatRepo = {
     },
     sendFilesRepo: async (data: messageInterface) => {
         try {            
-            console.log({data})
-            let message: any = await Message.create(data);
-            // await message.populate([
-            //     { path: 'sender', select: 'userName profilePic' },
-            //     { path: 'chat' },
-            // ]).populate({
-            //     path:'sharedPost',select:'imageUrl userId'                
-            // })
+            let message: any = await Message.create(data);            
             await message
             .populate([
                 { path: 'sender', select: 'userName profilePic' },
@@ -110,8 +103,7 @@ const chatRepo = {
                 path: "chat.users",
                 select: "userName profilePic email",
             });
-            await Chat.findByIdAndUpdate(data.chat, { latestMessage: message });            
-            console.log(message)
+            await Chat.findByIdAndUpdate(data.chat, { latestMessage: message });                        
             return message;
         } catch (error) {
             throw new Error((error as Error).message);
