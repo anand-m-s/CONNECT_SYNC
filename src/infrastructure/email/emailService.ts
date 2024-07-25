@@ -2,12 +2,12 @@ import nodemailer from 'nodemailer'
 
 import { Request } from "express";
 
-const sendVerifyMail = async (req: Request, name: string, email: string) => {
+const sendVerifyMail = async (req: Request, name: string, email: string,otp:string) => {
   try {
-    const sessionData = req.session!;
-    const otp = sessionData!.otp; 
-    console.log(otp+"node mailer"+email);
-    sessionData!.otpGeneratedTime = Date.now();
+    // const sessionData = req.session!;
+    // const otp = sessionData!.otp; 
+    console.log(otp,"node mailer"+email);
+    // sessionData!.otpGeneratedTime = Date.now();
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 587,

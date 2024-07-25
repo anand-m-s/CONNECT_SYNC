@@ -24,7 +24,7 @@ const meditationSchema :Schema<meditationDocument> = new Schema({
     },
     category:{
         type:String,
-        enum:["mindfulness", "sleep", "stress","breathing"],
+        enum:["mindfulness", "sleep","breathing","visualization"],
         required:true
     },
     image:{

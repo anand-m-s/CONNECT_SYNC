@@ -12,13 +12,21 @@ export const adminMeditationUsecases = {
             throw new Error((error as Error).message);
         }
     },
-    getCoursesUsecase: async () => {
+    getCoursesUsecase: async (skip:number,limit:number) => {
         try {
-            return await adminCourseRepo.getCourseRepo()
+            return await adminCourseRepo.getCourseRepo(skip,limit)
         } catch (error) {
             throw new Error((error as Error).message);
         }
     },
+    deleteCourseUsecase:async(courseId:string)=>{
+        try {
+            await adminCourseRepo.deleteCourseRepo(courseId)
+        } catch (error) {
+            
+            throw new Error((error as Error).message);
+        }
+    }
 
 
 

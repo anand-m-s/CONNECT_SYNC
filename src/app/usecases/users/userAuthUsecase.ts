@@ -1,15 +1,15 @@
 import { userRegisterInterface, verifiedTagInterface } from "../../../types/user/userRegisterInterface"
 import { saveUser, saveUserGoogle, updatePassword, verifyTagRepo } from "../../../frameworks/database/mongodb/repositories/user/userRepoMongoDb"
-import { forgotPassword, verifyUser } from "../../../frameworks/database/mongodb/repositories/user/isVerified"
+import { forgotPassword, resendOtp, verifyUser } from "../../../frameworks/database/mongodb/repositories/user/isVerified"
 import { generateToken } from "../../utils/generateToken"
 import { UserDocument } from "../../../frameworks/database/mongodb/models/user"
 import { getUser } from "../../../frameworks/database/mongodb/repositories/user/getUser"
+import { generateOtp } from "../../../utils/otpGeneratorFun"
 
 export default {
-    registerUser: async (data: userRegisterInterface) => {
+    registerUser: async (data: userRegisterInterface,otp:string) => {
         try {
-          
-            const savedUser = await saveUser(data)
+            const savedUser = await saveUser(data,otp)
             const user = {
                 id: savedUser._id,
                 email: savedUser.email,
@@ -21,9 +21,9 @@ export default {
             throw new Error((error as Error).message)
         }
     },
-    verifyUser: async (email: string) => {
+    verifyUser: async (email: string,otp:string) => {
         try {
-            const user = await verifyUser(email)
+            const user = await verifyUser(email,otp)
             const role: string = 'user'
             let token = generateToken(user.id, role)
             const accessToken = token.token
@@ -31,6 +31,13 @@ export default {
             return { user, accessToken, refreshToken }
         } catch (error) {
 
+            throw new Error((error as Error).message)
+        }
+    },
+    resendOtp:async (email: string,otp:string) => {
+        try {
+            await resendOtp(email,otp)          
+        } catch (error) {
             throw new Error((error as Error).message)
         }
     },
@@ -80,8 +87,8 @@ export default {
                 //     email: savedUser.email,
                 //     userName: savedUser.userName,
                 //     profilePic: savedUser.profilePic,
-                //     verified:saveUser?.verified,
-                //     verifiedExp:saveUser?.verifiedExp
+                //     verified:saveUser?.verifiedTag,
+                //     verifiedExp:saveUser?.verifiedTagPurchasedAt
                 // }
                 const role: string = 'user'
                 const token = generateToken(savedUser.id, role)
@@ -93,9 +100,9 @@ export default {
             throw new Error((error as Error).message)
         }
     },
-    forgotPassword: async (email: string) => {
+    forgotPassword: async (email: string,otp:string) => {
         try {
-            return await forgotPassword(email)
+            return await forgotPassword(email,otp)
         } catch (error) {
             throw new Error((error as Error).message)
         }

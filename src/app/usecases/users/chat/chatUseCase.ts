@@ -14,16 +14,8 @@ export default {
         }
 
     },
-    accessChat: async (userId: string, otherUserId: string) => {
- 
-    
-
-        if (!otherUserId) {
-            throw new Error("UserId param not sent with request");
-        }
-
+    accessChat: async (userId: string, otherUserId: string) => {      
         const isChat = await chatRepo.findChatBetweenUsers(userId, otherUserId);
-
         if (isChat.length > 0) {
             return { status: 200, data: isChat[0] };
         } else {

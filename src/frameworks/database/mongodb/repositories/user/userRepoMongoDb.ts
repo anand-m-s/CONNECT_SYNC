@@ -5,9 +5,10 @@ import bcrypt from 'bcrypt'
 import Connection from "../../models/connections";
 import Transaction from "../../models/transaction";
 import { BadRequestException, InternalServerErrorException } from "../../../../../errors/HttpExeption";
+import Otp from "../../models/verify";
 
 
-export const saveUser = async (data: userRegisterInterface) => {
+export const saveUser = async (data: userRegisterInterface, otp: string) => {
     try {
 
         const existingUser = await checkExistingUser(data.email, data.userName)
@@ -15,19 +16,13 @@ export const saveUser = async (data: userRegisterInterface) => {
             throw new BadRequestException('User already exists');
         }
         if (existingUser && !existingUser.isVerified) {
-            let verifyUser = {
-                _id: existingUser?.id,
-                email: existingUser?.email,
-                userName: existingUser?.userName
-            }
-            return verifyUser
+            await Otp.create({ userId: existingUser.id, otp });
+            return existingUser;
         }
-
-        const user = new User({
-            ...data,
-        })
-
-        return await user.save()
+        const user = new User({ ...data });
+        await user.save()
+        await Otp.create({ userId: user._id, otp });
+        return user;
     } catch (error) {
         throw new InternalServerErrorException((error as Error).message);
     }
@@ -66,7 +61,14 @@ export const saveUserGoogle = async (data: userRegisterInterface) => {
             userId: newUser._id
         })
 
-        return newUser
+        return {
+            id: newUser._id,
+            email: newUser.email,
+            userName: newUser.userName,
+            profilePic: newUser.profilePic,
+            verified: newUser?.verifiedTag,
+            verifiedExp: newUser?.verifiedTagPurchasedAt
+        };
     } catch (error) {
         throw new Error((error as Error).message);
     }

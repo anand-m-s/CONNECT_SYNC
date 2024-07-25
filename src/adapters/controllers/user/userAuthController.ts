@@ -13,21 +13,22 @@ export default {
     registerUser: async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { email, userName } = req.body
-            const user = await userAuthUsecase.registerUser(req.body)
+            const otp = generateOtp()
+            const user = await userAuthUsecase.registerUser(req.body,otp)
             if (user) {
-                const otp = generateOtp()
-                const sessionData = req.session!;
-                sessionData.otp = otp;
-                sessionData.otpGeneratedTime = Date.now();
+                // const otp = generateOtp()
+                // const sessionData = req.session!;
+                // sessionData.otp = otp;
+                // sessionData.otpGeneratedTime = Date.now();
                 // sendVerifyMail(req, userName, email)
-                req.session.save(err => {
-                    if (err) {
-                        console.error('Failed to save session:', err);
-                        return next(new Error('Session save failed'));
-                    }
-                    sendVerifyMail(req, userName, email)
-                    res.status(200).json({ message: "User registered please verify otp now", user });
-                });
+                // req.session.save(err => {
+                //     if (err) {
+                //         console.error('Failed to save session:', err);
+                //         return next(new Error('Session save failed'));
+                //     }
+                // });
+                sendVerifyMail(req, userName, email,otp)
+                res.status(200).json({ message: "User registered please verify otp now", user });
             }
             // res.status(200).json({ message: "User registered please verify otp now", user });
         } catch (error) {
@@ -36,13 +37,13 @@ export default {
     },
     verifyOtp: async (req: Request, res: Response) => {
         try {
-            const { email } = req.body
-            if (!validateOtp(req)) {
-                throw new Error('Invalid Otp')
-            }
-            expiryCheck(req)
-            cleanupSessionData(req)
-            const { user, accessToken, refreshToken } = await userAuthUsecase.verifyUser(email)
+            const { email,otp } = req.body
+            // if (!validateOtp(req)) {
+            //     throw new Error('Invalid Otp')
+            // }
+            // expiryCheck(req)
+            // cleanupSessionData(req)
+            const { user, accessToken, refreshToken } = await userAuthUsecase.verifyUser(email,otp)
             res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict' });
             res.status(200).json({ message: 'OTP verified', user, accessToken })
         }
@@ -55,10 +56,11 @@ export default {
             const { email, userName } = req.body
             cleanupSessionData(req)
             const otp = generateOtp()
-            const sessionData = req.session!;
-            sessionData.otp = otp;
-            sessionData.otpGeneratedTime = Date.now();
-            sendVerifyMail(req, userName, email)
+            // const sessionData = req.session!;
+            // sessionData.otp = otp;
+            // sessionData.otpGeneratedTime = Date.now();
+            await userAuthUsecase.resendOtp(email,otp)
+            sendVerifyMail(req, userName, email,otp)
             res.status(200).json({ message: 'Otp resend' })
         } catch (error) {
             res.status(500).json({ error: (error as Error).message })
@@ -91,14 +93,14 @@ export default {
     forgotPassword: async (req: Request, res: Response) => {
         try {
             const { email } = req.body;
-            const data: any = await userAuthUsecase.forgotPassword(email);
+            const otp = generateOtp()
+            const data: any = await userAuthUsecase.forgotPassword(email,otp);
             if (data.email) {
-                cleanupSessionData(req)
-                const otp = generateOtp()
-                const sessionData = req.session!;
-                sessionData.otp = otp;
-                sessionData.otpGeneratedTime = Date.now();
-                await sendVerifyMail(req, data.userName, data.email);
+                // cleanupSessionData(req)
+                // const sessionData = req.session!;
+                // sessionData.otp = otp;
+                // sessionData.otpGeneratedTime = Date.now();
+                await sendVerifyMail(req, data.userName, data.email,otp);
             }
             res.status(200).json(data);
         } catch (error) {

@@ -6,7 +6,7 @@ export const adminCourseRepo = {
 
     addCourseRepo: async (data: CourseData) => {
         try {
-         
+
             meditation.create({
                 ...data
             })
@@ -16,9 +16,21 @@ export const adminCourseRepo = {
             throw new Error((error as Error).message);
         }
     },
-    getCourseRepo: async () => {
+    getCourseRepo: async (skip: number, limit: number) => {
         try {
-            return await meditation.find({})                 
+            const [totalCourses, courses] = await Promise.all([
+                meditation.countDocuments(),  // Get total number of documents
+                meditation.find({}).skip(skip).limit(limit)  // Get paginated courses
+            ]);
+
+            return { totalCourses, courses }
+        } catch (error) {
+            throw new Error((error as Error).message);
+        }
+    },
+    deleteCourseRepo: async (courseId: string) => {
+        try {
+            await meditation.findByIdAndDelete({ _id: courseId })
         } catch (error) {
             throw new Error((error as Error).message);
         }
