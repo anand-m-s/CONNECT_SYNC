@@ -50,13 +50,12 @@ export default function initializeSocket(server: HTTPServer): Server {
         });
 
         socket.on('new message', (newMessageRecieved) => {
-            console.log(newMessageRecieved)
-
+            console.log(newMessageRecieved,'new Message::::::::')
             let chat = newMessageRecieved.chat;
             if (!chat.users) return console.log('chat.users not defined');
             chat.users.forEach((user: any) => {
                 if (user._id == newMessageRecieved.sender._id) return;
-                socket.in(user._id).emit("message recieved", newMessageRecieved);
+                socket.in(chat._id).emit("message recieved", newMessageRecieved);
             });
         });
 

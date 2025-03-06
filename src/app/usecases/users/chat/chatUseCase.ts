@@ -35,7 +35,7 @@ export default {
     },
     sendMessageUsecase: async (data: messageInterface) => {
         try {
-            console.log(data)
+          
             return await chatRepo.sendMessage(data)
         } catch (error) {
             throw new Error((error as Error).message)

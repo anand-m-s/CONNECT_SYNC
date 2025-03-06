@@ -1,9 +1,9 @@
 
 import { adminRepo } from "../../../frameworks/database/mongodb/repositories/admin/adminRepoMongodb"
 export const adminUserUsecases = {
-    fetchAllUser: async () => {
+    fetchAllUser: async (skip:number,limit:number) => {
         try {
-            const allUsers = await adminRepo.fetchAllusers();
+            const allUsers = await adminRepo.fetchAllusers(skip,limit);
             return allUsers;
         } catch (error) {
             throw new Error((error as Error).message);

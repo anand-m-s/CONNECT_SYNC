@@ -42,10 +42,10 @@ export const postRepo = {
             return await Post.aggregate([
                 {
                     $match: {
-                        $or: [
-                            { userId: { $in: followingIds } },
-                            { userId: currentUserObjectId }
-                        ],
+                        // $or: [
+                        //     { userId: { $in: followingIds } },
+                        //     { userId: currentUserObjectId }
+                        // ],
                         isBlocked: false
                     }
                 },

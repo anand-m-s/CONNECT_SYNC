@@ -17,10 +17,15 @@ export const adminRepo = {
             throw new Error((error as Error).message);
         }
     },
-    fetchAllusers: async (): Promise<UserDocument[] | null> => {
+    fetchAllusers: async (skip:number,limit:number) => {
         try {
-            const users = await User.find({}).select('userName email isBlocked profilePic createdAt').lean();
-            return users || null;
+            const [count,users] = await Promise.all([
+               User.countDocuments(),
+               await User.find({}).select('userName email isBlocked profilePic createdAt').skip(skip).limit(limit)
+            ]);
+            // const users = await User.find({}).select('userName email isBlocked profilePic createdAt').lean();
+            // return users || null;
+            return {users,count}
         } catch (error) {
             throw new Error((error as Error).message);
         }
